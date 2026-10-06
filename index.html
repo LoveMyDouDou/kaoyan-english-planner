@@ -915,9 +915,126 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 14px -4px rgba(249, 115, 22, 0.3);
   }
+
+  /* ===== 登录门 ===== */
+  body.locked { overflow: hidden; }
+  body.locked .container { display: none; }
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #ff9a3c 0%, #ff6f91 30%, #c471ed 65%, #6a9bff 100%);
+    background-size: 300% 300%;
+    animation: gradientShift 15s ease infinite;
+    overflow-y: auto;
+  }
+  .auth-gate.hidden { display: none; }
+  .auth-card {
+    width: 100%; max-width: 430px;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 32px 28px 26px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+    border: 1px solid rgba(255,255,255,0.6);
+    text-align: center;
+    margin: auto;
+  }
+  .auth-logo {
+    width: 82px; height: 82px; border-radius: 50%; object-fit: cover;
+    border: 4px solid #fff; box-shadow: 0 8px 24px rgba(249,115,22,0.35);
+    margin-bottom: 12px;
+    animation: authLogoFloat 3s ease-in-out infinite;
+  }
+  @keyframes authLogoFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .auth-title {
+    font-size: 1.32rem; font-weight: 800;
+    background: linear-gradient(135deg,#fb923c,#f472b6,#a78bfa);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 4px;
+  }
+  .auth-sub { font-size: 0.84rem; color: #6b7280; margin-bottom: 20px; }
+  .auth-field { text-align: left; margin-bottom: 14px; }
+  .auth-field label { display: block; font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .auth-field input {
+    width: 100%; padding: 12px 14px; border-radius: 11px;
+    border: 2px solid #e5e7eb; background: #fff; font-size: 0.92rem;
+    font-family: inherit; transition: all .2s; outline: none;
+  }
+  .auth-field input:focus { border-color: #fb923c; box-shadow: 0 0 0 4px rgba(251,146,60,0.12); }
+  .auth-submit {
+    width: 100%; padding: 13px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg,#fb923c,#f472b6,#a78bfa);
+    background-size: 200% 200%;
+    color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer;
+    font-family: inherit; margin-top: 6px;
+    box-shadow: 0 8px 20px -6px rgba(244,114,182,.5);
+    transition: all .25s;
+  }
+  .auth-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -6px rgba(244,114,182,.6); }
+  .auth-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .auth-msg { font-size: 0.85rem; margin-top: 14px; min-height: 20px; line-height: 1.55; }
+  .auth-msg.error { color: #dc2626; }
+  .auth-msg.success { color: #059669; }
+  .auth-msg.info { color: #2563eb; }
+
+  /* 顶部用户条 */
+  .user-bar {
+    position: fixed; top: 14px; left: 14px; z-index: 600;
+    display: none; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    padding: 6px 8px 6px 14px; border-radius: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+    border: 1px solid rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+  }
+  .user-bar.show { display: flex; }
+  .user-bar .u-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+  .user-bar .u-email { color: #374151; font-weight: 600; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-bar .u-logout {
+    border: none; background: linear-gradient(135deg,#fb923c,#f472b6);
+    color: #fff; padding: 5px 13px; border-radius: 20px;
+    font-size: 0.76rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all .2s;
+  }
+  .user-bar .u-logout:hover { transform: translateY(-1px); box-shadow: 0 6px 14px -4px rgba(249,115,22,.5); }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- ===== 访问码门 ===== -->
+<div class="auth-gate" id="authGate">
+  <div class="auth-card">
+    <img src="logo.jpg" alt="锦鲤学姐Ivy" class="auth-logo">
+    <div class="auth-title">锦鲤学姐 Ivy 英语课堂</div>
+    <div class="auth-sub">考研英语备考规划 · 学员专属</div>
+
+    <div class="auth-field">
+      <label>访问码</label>
+      <input type="password" id="accessCode" placeholder="请输入学姐发给你的访问码" autocomplete="off">
+    </div>
+    <button type="button" class="auth-submit" id="accessSubmit">进入规划器</button>
+    <div class="auth-msg" id="authMsg"></div>
+
+    <div style="background:linear-gradient(135deg,#fff7ed,#fdf2f8); border-radius:14px; padding:14px; margin-top:18px; font-size:0.82rem; color:#374151; line-height:1.9; text-align:left;">
+      <div style="font-weight:700; margin-bottom:4px;">🔑 还没有访问码？</div>
+      <div>· 微信 / 小红书 / B站 私信「锦鲤学姐 Ivy」</div>
+      <div>· 报名课程后即可获取专属访问码</div>
+      <div>· 输入一次后本机自动记住，下次免输入</div>
+    </div>
+  </div>
+</div>
+
+<!-- 顶部用户条（解锁后显示） -->
+<div class="user-bar" id="userBar">
+  <span class="u-dot"></span>
+  <span class="u-email" id="userEmail">学员已解锁</span>
+  <button class="u-logout" id="logoutBtn" type="button">退出</button>
+</div>
 
 <div class="container">
   <!-- Header -->
@@ -1683,6 +1800,23 @@
 </div>
 
 <script>
+/* =========================================================
+   ★★★ 访问码配置（只需改这里）★★★
+   学生在页面输入访问码才能进入规划器。
+   下面存的是访问码的 SHA-256 加密值（不是明文），
+   所以学生查看网页源码也看不到访问码本身。
+
+   当前可用访问码：
+     · JINLI2025  （通用码）
+     · IVY2025    （备用码）
+
+   想加新码 / 改码？把新访问码发给锦鲤学姐，重新生成加密值即可。
+   ========================================================= */
+const ACCESS_CODES = [
+  { hash: "d98474fa58527a2ee969cea60349b65287e65d16618703af9f68c2eb96f5cfc0", label: "通用访问码" },
+  { hash: "fd14478c46c62e0664173108b4e21bc8af2a1b5490241493ac0678927169d578", label: "备用访问码" }
+];
+
 let planData = null;
 let currentDay = 1;
 let currentPhase = 1;
@@ -2593,6 +2727,132 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* =========================================================
+   访问码解锁
+   ========================================================= */
+const ACCESS_KEY = 'ivy_access_ok';
+
+function sha256(str) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const bytes = [];
+  for (let i = 0; i < str.length; i++) {
+    let c = str.charCodeAt(i);
+    if (c < 0x80) bytes.push(c);
+    else if (c < 0x800) bytes.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+    else if (c < 0xd800 || c >= 0xe000) bytes.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    else {
+      i++;
+      const c2 = str.charCodeAt(i);
+      const cp = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));
+      bytes.push(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+    }
+  }
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  bytes.push(0, 0, 0, 0);
+  bytes.push((bitLen >>> 24) & 255, (bitLen >>> 16) & 255, (bitLen >>> 8) & 255, bitLen & 255);
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let i = 0; i < bytes.length; i += 64) {
+    const w = new Array(64);
+    for (let j = 0; j < 16; j++) w[j] = (bytes[i + j * 4] << 24) | (bytes[i + j * 4 + 1] << 16) | (bytes[i + j * 4 + 2] << 8) | bytes[i + j * 4 + 3];
+    for (let j = 16; j < 64; j++) {
+      const s0 = rotr(w[j - 15], 7) ^ rotr(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+      const s1 = rotr(w[j - 2], 17) ^ rotr(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+      w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+    }
+    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (let j = 0; j < 64; j++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ ((~e) & g);
+      const t1 = (h + S1 + ch + K[j] + w[j]) | 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H = [(H[0] + a) | 0, (H[1] + b) | 0, (H[2] + c) | 0, (H[3] + d) | 0, (H[4] + e) | 0, (H[5] + f) | 0, (H[6] + g) | 0, (H[7] + h) | 0];
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+
+function isUnlocked() {
+  try { return localStorage.getItem(ACCESS_KEY) === 'ok'; } catch (e) { return false; }
+}
+
+function setAuthMsg(text, type) {
+  const el = document.getElementById('authMsg');
+  el.textContent = text || '';
+  el.className = 'auth-msg' + (type ? ' ' + type : '');
+}
+
+function showGate() {
+  document.getElementById('authGate').classList.remove('hidden');
+  document.body.classList.add('locked');
+  document.getElementById('userBar').classList.remove('show');
+}
+
+function unlockPlanner() {
+  document.getElementById('authGate').classList.add('hidden');
+  document.body.classList.remove('locked');
+  document.getElementById('userBar').classList.add('show');
+}
+
+async function initAuth() {
+  const input = document.getElementById('accessCode');
+  const btn = document.getElementById('accessSubmit');
+
+  if (isUnlocked()) {
+    unlockPlanner();
+  } else {
+    showGate();
+    setTimeout(() => input.focus(), 300);
+  }
+
+  async function submit() {
+    const code = (input.value || '').trim();
+    if (!code) {
+      setAuthMsg('请输入访问码', 'error');
+      input.focus();
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '验证中…';
+    setAuthMsg('');
+    const hit = ACCESS_CODES.find(c => c.hash === sha256(code));
+    if (hit) {
+      try { localStorage.setItem(ACCESS_KEY, 'ok'); } catch (e) {}
+      unlockPlanner();
+      window.scrollTo({ top: 0 });
+    } else {
+      setAuthMsg('访问码不正确，请检查后重试；尚未获取请联系锦鲤学姐。', 'error');
+      input.value = '';
+      input.focus();
+    }
+    btn.disabled = false;
+    btn.textContent = '进入规划器';
+  }
+
+  btn.addEventListener('click', submit);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    try { localStorage.removeItem(ACCESS_KEY); } catch (e) {}
+    input.value = '';
+    setAuthMsg('');
+    showGate();
+    setTimeout(() => input.focus(), 300);
+  });
+}
+
 // 页面加载时设置默认日期
 window.onload = function() {
   const today = new Date();
@@ -2601,6 +2861,9 @@ window.onload = function() {
   const year = today.getMonth() >= 10 ? today.getFullYear() + 1 : today.getFullYear();
   const examDefault = new Date(year, 11, 21); // 12月21日
   document.getElementById('examDate').value = examDefault.toISOString().split('T')[0];
+
+  // 启动账号系统
+  initAuth();
 };
 </script>
 
